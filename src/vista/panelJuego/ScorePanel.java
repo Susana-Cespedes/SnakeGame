@@ -4,17 +4,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class ScorePanel extends JPanel {
-    public ScorePanel() {
-        setBackground(new Color(0,255,0));
-        setLayout(new FlowLayout(FlowLayout.LEFT));
-        JLabel scoreLabel = new JLabel("Score: 0 ");
-        scoreLabel.setForeground(new Color(64,64,64));
 
-        JLabel highScoreLabel = new JLabel("Highscore: 100", SwingConstants.CENTER);
-        highScoreLabel.setForeground(new Color(64,64,64));
-        //highScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+    private JLabel scoreLabel;
+    private JLabel highScoreLabel;
+    private int highScore;
+
+    public ScorePanel() {
+
+        setLayout(new GridLayout(1, 2));
+        setBackground(new Color(34,139,34));
+
+        scoreLabel = new JLabel("Score: 0");
+        highScoreLabel = new JLabel("High Score: 0");
+
         try {
             // Cargar la fuente desde archivo
             Font retroFont = Font.createFont(Font.TRUETYPE_FONT, new File("resources\\fonts\\PressStart2P-Regular.ttf"))
@@ -31,7 +37,46 @@ public class ScorePanel extends JPanel {
         add(scoreLabel);
         add(highScoreLabel);
 
+        loadHighScore();
+        updateHighScore(highScore);
+
     }
+
+    public void updateScore(int score) {
+        scoreLabel.setText("Score: " + score);
+        if (score > highScore) {
+            highScore = score;
+            updateHighScore(highScore);
+            saveHighScore();
+        }
+    }
+
+    public void updateHighScore(int highScore) {
+        highScoreLabel.setText("High Score: " + highScore);
+    }
+
+    private void loadHighScore() {
+        File file = new File("resources/highscore.txt");
+        if (file.exists()) {
+            try (Scanner sc = new Scanner(file)) {
+                if (sc.hasNextInt()) {
+                    highScore = sc.nextInt();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void saveHighScore() {
+        try (PrintWriter pw = new PrintWriter("resources/highscore.txt")) {
+            pw.println(highScore);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
+
 
 

@@ -1,116 +1,115 @@
+
+
 package controlador;
 
 import model.SGBoardModel;
 import vista.panelJuego.SnakeGameBoard;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.util.ArrayList;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class SGBoardControl {
-    private final SnakeGameBoard view;
+public class SGBoardControl implements KeyListener {
+
+    private final SnakeGameBoard snakeGameBoard;
     private final SGBoardModel model;
+    private Timer timer;
+    private final int DELAY = 150; // velocidad del juego en ms
 
-    public SGBoardControl(SnakeGameBoard view, SGBoardModel model) {
-        this.view = view;
+    public SGBoardControl(SGBoardModel model, SnakeGameBoard snakeGameBoard) {
         this.model = model;
-        //initGame();
+        this.snakeGameBoard = snakeGameBoard;
+
+        // Configurar Timer para actualizar el juego
+
+        timer = new Timer(DELAY, e -> updateGame());
+        timer.start();
+
+        snakeGameBoard.getBoardPanel().addKeyListener(this);
+
+        // Asegurar foco
+        SwingUtilities.invokeLater(() -> {
+            snakeGameBoard.getBoardPanel().requestFocusInWindow();
+        });
+
+        // Primera sincronización del estado (importante para evitar NullPointerException al inicio)
+        snakeGameBoard.getBoardPanel().setManzana(model.getFood());
+        snakeGameBoard.getBoardPanel().setSerpiente(model.getSnake());
+        snakeGameBoard.getBoardPanel().repaint();
+
+        snakeGameBoard.setVisible(true);
     }
-    /*private void initGame() {
-        int score = 0;
-        model.direction = "RIGHT";
-        gameOver = false;
 
-        int centerX = PLAY_COLS / 2;
-        int centerY = PLAY_ROWS / 2;
-        snake = new ArrayList<>();
-        snake.add(new Point(centerX, centerY));
-        snake.add(new Point(centerX - 1, centerY));
-        snake.add(new Point(centerX - 2, centerY));
+    private void updateGame() {
+        if (!model.isGameOver()) {
+            model.moveSnake();
 
-        generateFood();
-    }*/
+            // ✅ Pasar estado del modelo al BoardPanel
+            snakeGameBoard.getBoardPanel().setManzana(model.getFood());
+            snakeGameBoard.getBoardPanel().setSerpiente(model.getSnake());
 
-/*// Movimiento automático con Timer
-
-    timer = new Timer(150, e -> {
-        if (!gameOver) {
-            moveSnake();
-            gamePanel.repaint();
-        }
-    });
-    timer.start();
-
-
-    // Control de teclas
-    addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    if (!direction.equals("DOWN")) direction = "UP";
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if (!direction.equals("UP")) direction = "DOWN";
-                    break;
-                case KeyEvent.VK_LEFT:
-                    if (!direction.equals("RIGHT")) direction = "LEFT";
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if (!direction.equals("LEFT")) direction = "RIGHT";
-                    break;
-            }
-        }
-    });*/
-/*
-
-
-    private void moveSnake() {
-        Point head = snake.get(0);
-        Point newHead = new Point(head);
-
-        switch (direction) {
-            case "UP": newHead.y--; break;
-            case "DOWN": newHead.y++; break;
-            case "LEFT": newHead.x--; break;
-            case "RIGHT": newHead.x++; break;
-        }
-
-        // Colisión con paredes
-        if (newHead.x < 0 || newHead.x >= PLAY_COLS || newHead.y < 0 || newHead.y >= PLAY_ROWS) {
-            endGame();
-            return;
-        }
-
-        // Colisión con el cuerpo
-        if (snake.contains(newHead)) {
-            endGame();
-            return;
-        }
-
-        // Comer comida
-        if (newHead.equals(food)) {
-            snake.add(0, newHead);
-            score += 10;
-            if (score > highScore) highScore = score;
-            generateFood();
+            snakeGameBoard.getScorePanel().updateScore(model.getScore());
+            snakeGameBoard.getBoardPanel().repaint();
         } else {
-            snake.add(0, newHead);
-            snake.remove(snake.size() - 1);
+            timer.stop();
+            showGameOver();
+            snakeGameBoard.addKeyListener(this);
         }
     }
 
-    private void generateFood() {
-        Random rand = new Random();
-        Point newFood;
-        do {
-            newFood = new Point(rand.nextInt(PLAY_COLS), rand.nextInt(PLAY_ROWS));
-        } while (snake.contains(newFood));
-        food = newFood;
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+
+        if (!model.isGameOver()) {
+            switch (key) {
+                case KeyEvent.VK_UP -> model.setDirection(SGBoardModel.Direction.UP);
+                case KeyEvent.VK_DOWN -> model.setDirection(SGBoardModel.Direction.DOWN);
+                case KeyEvent.VK_LEFT -> model.setDirection(SGBoardModel.Direction.LEFT);
+                case KeyEvent.VK_RIGHT -> model.setDirection(SGBoardModel.Direction.RIGHT);
+            }
+        } else if (key == KeyEvent.VK_ENTER) {
+            resetGame();
+        }
     }
 
-    private void endGame() {
-        gameOver = true;
-        timer.stop();
-    }*/
+    private void resetGame() {
+        model.resetGame();
+        snakeGameBoard.removeKeyListener(this); // antes de volver al board
+        snakeGameBoard.remove(snakeGameBoard.getGameOverPanel());
+        snakeGameBoard.add(snakeGameBoard.getBoardPanel(), BorderLayout.CENTER);
+
+        // ✅ Pasa el estado inicial del modelo al BoardPanel
+        snakeGameBoard.getBoardPanel().setManzana(model.getFood());
+        snakeGameBoard.getBoardPanel().setSerpiente(model.getSnake());
+
+        snakeGameBoard.revalidate();
+        snakeGameBoard.repaint();
+        snakeGameBoard.getBoardPanel().addKeyListener(this);
+        // Foco al tablero
+        SwingUtilities.invokeLater(() -> {
+            snakeGameBoard.getBoardPanel().requestFocusInWindow();
+        });
+        snakeGameBoard.getScorePanel().updateScore(model.getScore());
+        timer.start();
+    }
+
+    private void showGameOver() {
+        snakeGameBoard.remove(snakeGameBoard.getBoardPanel());
+        snakeGameBoard.add(snakeGameBoard.getGameOverPanel(), BorderLayout.CENTER);
+        snakeGameBoard.revalidate();
+        snakeGameBoard.repaint();
+        snakeGameBoard.setFocusable(true);
+        snakeGameBoard.requestFocus();
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {}
+
+    @Override
+    public void keyTyped(KeyEvent e) {}
 }
+
+
+

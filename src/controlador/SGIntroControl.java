@@ -1,3 +1,4 @@
+
 package controlador;
 
 import model.SGBoardModel;
@@ -6,7 +7,6 @@ import vista.intro.SnakeGameIntro;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 
 public class SGIntroControl {
     private final SnakeGameIntro view;
@@ -17,20 +17,30 @@ public class SGIntroControl {
     }
 
     private void initListener() {
-        // Detectar tecla ENTER
+        // Detectar tecla ENTER en la pantalla de inicio
         view.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    view.dispose(); // Cierra la pantalla inicial
-                    SnakeGameBoard boardFrame = new SnakeGameBoard();
-                    SGBoardModel boardModel = new SGBoardModel();
-                    new SGBoardControl (boardFrame, boardModel);// Abre la ventana del juego
+                    // Cierra la pantalla inicial
+                    view.dispose();
+
+                    // Crear la ventana principal del juego
+                    SnakeGameBoard gameBoard = new SnakeGameBoard();
+                    SGBoardModel boardModel = new  SGBoardModel();
+
+                    // Crear el controlador principal con todas las referencias
+                    new SGBoardControl(boardModel, gameBoard);
                 }
             }
         });
-        // Asegurarse de que la vista tenga el foco para recibir eventos de teclado
+
+        // Asegurar que la vista inicial tenga el foco para recibir eventos
         view.setFocusable(true);
-        view.requestFocusInWindow();
+        //view.requestFocusInWindow();
     }
 }
+
+
+
+

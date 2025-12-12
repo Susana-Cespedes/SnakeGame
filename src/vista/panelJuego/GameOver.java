@@ -8,7 +8,6 @@ import java.io.IOException;
 public class GameOver extends JPanel {
     public GameOver() {
 
-
     }
     @Override
     protected void paintComponent(Graphics g) {
@@ -36,6 +35,8 @@ public class GameOver extends JPanel {
 
         //g.setFont(new Font("Arial", Font.BOLD, 16));
         g.drawString("Presione ENTER para reiniciar", 70, 225);
+
+        setBackground(new Color(34,139,34));
 
         }
 }

@@ -8,6 +8,8 @@ public class Main {
         javax.swing.SwingUtilities.invokeLater(() -> {
             SnakeGameIntro introFrame = new SnakeGameIntro();
             new SGIntroControl(introFrame);
+
+            introFrame.setVisible(true);
         });
     }
 }
