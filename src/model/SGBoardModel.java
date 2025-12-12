@@ -112,5 +112,4 @@ public class SGBoardModel {
     public int getScore() {
         return score;
     }
-
 }

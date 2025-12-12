@@ -10,8 +10,8 @@ public class BoardPanel extends JPanel {
     private Point manzana;
     private List<Point> serpiente;// Lista de segmentos de la serpiente
 
-    public BoardPanel(int tileSize) {
-        this.TILE_SIZE = tileSize;
+    public BoardPanel(int TILE_SIZE) {
+        this.TILE_SIZE = TILE_SIZE;
 
         setBackground(new Color(34, 139, 34));
         setBorder(BorderFactory.createLineBorder(new Color(64, 64, 64)));
@@ -24,7 +24,7 @@ public class BoardPanel extends JPanel {
     }
 
     public void setSerpiente(List<Point> serpiente) {
-        // Copia defensiva para evitar aliasing
+
         this.serpiente = (serpiente != null) ? new ArrayList<>(serpiente) : new ArrayList<>();
     }
 
@@ -33,7 +33,7 @@ public class BoardPanel extends JPanel {
         super.paintComponent(g);
 
         if (manzana == null || serpiente == null || serpiente.isEmpty()) {
-            return; // No pintar si aún no hay estado
+            return; // No pintar aún
         }
 
         // Dibujar comida

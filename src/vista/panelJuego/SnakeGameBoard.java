@@ -47,8 +47,7 @@ public class SnakeGameBoard extends JFrame {
         return(borde);
     }
 
-
-    // ✅ Getters para que SGIntroControl pueda acceder
+    // Getters para que SGIntroControl pueda acceder
     public BoardPanel getBoardPanel() {
         return boardPanel;
     }

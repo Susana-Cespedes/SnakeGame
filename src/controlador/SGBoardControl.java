@@ -1,5 +1,3 @@
-
-
 package controlador;
 
 import model.SGBoardModel;
@@ -45,7 +43,7 @@ public class SGBoardControl implements KeyListener {
         if (!model.isGameOver()) {
             model.moveSnake();
 
-            // ✅ Pasar estado del modelo al BoardPanel
+            // Pasar estado del modelo al BoardPanel
             snakeGameBoard.getBoardPanel().setManzana(model.getFood());
             snakeGameBoard.getBoardPanel().setSerpiente(model.getSnake());
 
@@ -80,7 +78,7 @@ public class SGBoardControl implements KeyListener {
         snakeGameBoard.remove(snakeGameBoard.getGameOverPanel());
         snakeGameBoard.add(snakeGameBoard.getBoardPanel(), BorderLayout.CENTER);
 
-        // ✅ Pasa el estado inicial del modelo al BoardPanel
+        // Pasa el estado inicial del modelo al BoardPanel
         snakeGameBoard.getBoardPanel().setManzana(model.getFood());
         snakeGameBoard.getBoardPanel().setSerpiente(model.getSnake());
 
